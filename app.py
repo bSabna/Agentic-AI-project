@@ -24,7 +24,7 @@ with col1:
 
 with col2:
     procedure = st.text_input("Procedure", placeholder="e.g. Outpatient consultation and blood work")
-    billed_amount = st.number_input("Billed Amount ($)", min_value=1, value=0)
+    billed_amount = st.number_input("Billed Amount ($)", min_value=0, value=0)
     provider_type = st.selectbox("Provider Type", 
         ["Select Provider Type", "Primary Care", "Specialist", "Hospital", "Emergency", "Lab"])
     days_since_last_claim = st.number_input(

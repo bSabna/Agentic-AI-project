@@ -17,20 +17,20 @@ st.header(" Submit a Healthcare Claim")
 col1, col2 = st.columns(2)
 
 with col1:
-    claim_id = st.text_input("Claim ID", value="CLM-2024-001")
-    age = st.number_input("Patient Age", min_value=1, max_value=120, value=45)
-    diagnosis = st.text_input("Diagnosis", value="Type 2 Diabetes")
-    icd_code = st.text_input("ICD-10 Code", value="E11.9")
+    claim_id = st.text_input("Claim ID", placeholder="e.g. CLM-2024-001")
+    age = st.number_input("Patient Age", min_value=1, max_value=120, value=25)
+    diagnosis = st.text_input("Diagnosis", placeholder="e.g. Type 2 Diabetes")
+    icd_code = st.text_input("ICD-10 Code", placeholder="e.g. E11.9")
 
 with col2:
-    procedure = st.text_input("Procedure", value="Outpatient consultation and blood work")
-    billed_amount = st.number_input("Billed Amount ($)", min_value=1, value=1500)
+    procedure = st.text_input("Procedure", placeholder="e.g. Outpatient consultation and blood work")
+    billed_amount = st.number_input("Billed Amount ($)", min_value=1, value=0)
     provider_type = st.selectbox("Provider Type", 
-        ["Primary Care", "Specialist", "Hospital", "Emergency", "Lab"])
+        ["Select Provider Type", "Primary Care", "Specialist", "Hospital", "Emergency", "Lab"])
     days_since_last_claim = st.number_input(
-        "Days Since Last Claim", min_value=0, value=45)
+        "Days Since Last Claim", min_value=0, value=0)
     claims_this_month = st.number_input(
-        "Number of Claims This Month", min_value=0, value=1)
+        "Number of Claims This Month", min_value=0, value=0)
 
 st.markdown("---")
 

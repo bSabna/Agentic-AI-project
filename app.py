@@ -8,7 +8,7 @@ st.set_page_config(
 )
 
 st.title("Healthcare Claims Agentic AI")
-st.subheader("Autonomous Claims Review System")
+
 st.markdown("---")
 
 # Input Form

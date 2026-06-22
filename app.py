@@ -7,7 +7,7 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("Cotiviti Healthcare Claims Agentic AI")
+st.title("Healthcare Claims Agentic AI")
 st.subheader("Autonomous Claims Review System")
 st.markdown("---")
 

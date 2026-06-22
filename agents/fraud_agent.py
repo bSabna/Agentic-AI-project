@@ -1,14 +1,19 @@
 from langchain_groq import ChatGroq
 from rag.retriever import retrieve_context
-from dotenv import load_dotenv
 import os
 
-load_dotenv()
+try:
+    import streamlit as st
+    api_key = st.secrets["GROQ_API_KEY"]
+except:
+    from dotenv import load_dotenv
+    load_dotenv()
+    api_key = os.getenv("GROQ_API_KEY")
 
 def run_fraud_agent(claim: dict) -> dict:
     llm = ChatGroq(
         model="llama-3.3-70b-versatile",
-        api_key=os.getenv("GROQ_API_KEY")
+        api_key=api_key
     )
 
     context = retrieve_context("fraud indicators waste abuse billing")

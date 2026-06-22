@@ -1,14 +1,20 @@
 from langchain_groq import ChatGroq
-from dotenv import load_dotenv
+from rag.retriever import retrieve_context
 import os
 
-load_dotenv()
+try:
+    import streamlit as st
+    api_key = st.secrets["GROQ_API_KEY"]
+except:
+    from dotenv import load_dotenv
+    load_dotenv()
+    api_key = os.getenv("GROQ_API_KEY")
 
 def run_decision_agent(claim: dict, cost_result: dict, 
                         fraud_result: dict, coding_result: dict) -> dict:
     llm = ChatGroq(
         model="llama-3.3-70b-versatile",
-        api_key=os.getenv("GROQ_API_KEY")
+        api_key=api_key
     )
 
     prompt = f"""You are the Final Decision Agent for Cotiviti's Claims Review System.

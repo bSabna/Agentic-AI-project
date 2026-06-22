@@ -1,6 +1,7 @@
 langchain
 langchain-groq
 langchain-community
+langchain-text-splitters
 chromadb
 streamlit
 sentence-transformers

@@ -98,5 +98,5 @@ if st.button(" Run Agentic AI Analysis", type="primary"):
     st.text(output)
 
     st.markdown("---")
-    st.info(" This analysis was performed by Cotiviti's Agentic AI Pipeline: "
+    st.info(" This analysis was performed by Agentic AI Pipeline: "
             "Cost Agent → Fraud Agent → Coding Agent → Decision Agent")

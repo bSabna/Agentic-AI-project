@@ -1,0 +1,44 @@
+HEALTHCARE PAYMENT GUIDELINES - CMS
+
+1. CLAIM COST THRESHOLDS
+- Average outpatient visit cost: $150 - $500
+- Average inpatient stay per day: $2,000 - $5,000
+- Emergency room visit: $500 - $3,000
+- Surgical procedure (minor): $3,000 - $10,000
+- Surgical procedure (major): $10,000 - $50,000
+- Prescription drugs (monthly): $50 - $500
+
+2. FRAUD INDICATORS
+- Billing for services not rendered
+- Upcoding: billing higher cost service than provided
+- Duplicate claims for same service
+- Unbundling: billing separately for bundled services
+- Claims with no matching diagnosis code
+- Provider billing more than 24 hours of services per day
+- Identical claims submitted within 30 days
+
+3. ICD-10 COMMON CODES
+- Z00.00: General adult medical examination
+- J06.9: Acute upper respiratory infection
+- I10: Essential hypertension
+- E11.9: Type 2 diabetes without complications
+- M54.5: Low back pain
+- J18.9: Pneumonia unspecified
+- I21.9: Acute myocardial infarction
+- K21.0: GERD with esophagitis
+- F32.9: Major depressive disorder
+- G43.909: Migraine unspecified
+
+4. RISK ADJUSTMENT RULES
+- HCC codes must be supported by clinical documentation
+- Diagnoses must be confirmed by licensed provider
+- Chronic conditions must be documented every year
+- Risk scores above 3.0 require additional review
+- Medicare Advantage plans use CMS-HCC model
+
+5. PAYMENT ACCURACY RULES
+- All claims must have valid NPI number
+- Procedure codes must match diagnosis codes
+- Date of service cannot be in the future
+- Claims must be submitted within 365 days of service
+- Coordination of benefits required for dual coverage

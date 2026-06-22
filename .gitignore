@@ -1,0 +1,8 @@
+venv/
+.env
+__pycache__/
+*.pyc
+*.pyd
+*.dll
+rag/chroma_db/
+.streamlit/

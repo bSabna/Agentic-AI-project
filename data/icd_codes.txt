@@ -1,0 +1,33 @@
+ICD-10 DIAGNOSIS CODES AND EXPECTED COST RANGES
+
+RESPIRATORY CONDITIONS
+- J06.9 Acute URI: Expected cost $100-$300
+- J18.9 Pneumonia: Expected cost $5,000-$15,000
+- J45.909 Asthma: Expected cost $200-$800
+
+CARDIOVASCULAR
+- I10 Hypertension: Expected cost $150-$500
+- I21.9 Heart Attack: Expected cost $20,000-$50,000
+- I50.9 Heart Failure: Expected cost $15,000-$30,000
+
+METABOLIC
+- E11.9 Type 2 Diabetes: Expected cost $300-$1,000
+- E03.9 Hypothyroidism: Expected cost $100-$400
+- E66.9 Obesity: Expected cost $200-$600
+
+MUSCULOSKELETAL
+- M54.5 Back Pain: Expected cost $200-$2,000
+- M17.11 Knee Osteoarthritis: Expected cost $500-$5,000
+
+MENTAL HEALTH
+- F32.9 Depression: Expected cost $200-$800
+- F41.1 Anxiety: Expected cost $150-$600
+
+PREVENTIVE
+- Z00.00 Annual Exam: Expected cost $150-$350
+- Z23 Vaccination: Expected cost $50-$200
+
+ANOMALY FLAGS
+- Any claim exceeding 3x the expected cost range = FLAG
+- Any claim with mismatched diagnosis/procedure = FLAG
+- Duplicate claim within 30 days = FLAG

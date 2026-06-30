@@ -54,31 +54,52 @@ def render_rag_evidence(query: str):
 
 # ── Cost Agent ────────────────────────────────────────────────────────────────
 def render_cost_agent(output, log, claim):
-    _expected  = re.search(r'EXPECTED_RANGE:\s*(.+)',       output)
-    _assess    = re.search(r'COST_ASSESSMENT:\s*(.+)',      output)
-    _risk      = re.search(r'COST_RISK_SCORE:\s*(\d+)/10', output)
-    _reasoning = re.search(r'REASONING:\s*([\s\S]+)',       output)
+    _expected  = re.search(
+        r'EXPECTED_RANGE:\s*(.+?)(?=\s+COST_ASSESSMENT:|\s+COST_RISK_SCORE:|\s+REASONING:|$)',
+        output, re.DOTALL)
+    _assess    = re.search(
+        r'COST_ASSESSMENT:\s*(.+?)(?=\s+COST_RISK_SCORE:|\s+REASONING:|$)',
+        output, re.DOTALL)
+    _risk      = re.search(
+        r'COST_RISK_SCORE:\s*(\d+(?:\.\d+)?)/10',
+        output)
+    _reasoning = re.search(
+        r'REASONING:\s*(.+)$',
+        output, re.DOTALL)
 
     _expected_val  = _expected.group(1).strip()  if _expected  else "N/A"
     _assess_val    = _assess.group(1).strip()    if _assess    else "N/A"
-    _risk_val      = int(_risk.group(1))         if _risk      else 0
+    _risk_val      = _risk.group(1).strip()      if _risk      else "N/A"
     _reasoning_val = _reasoning.group(1).strip() if _reasoning else output
 
-    _risk_icon   = "🔴" if _risk_val >= 7 else "🟡" if _risk_val >= 4 else "🟢"
+    _risk_int    = int(float(_risk_val)) if _risk_val != "N/A" else 0
+    _risk_icon   = "🔴" if _risk_int >= 7 else "🟡" if _risk_int >= 4 else "🟢"
     _assess_icon = "⚠️" if "anomal" in _assess_val.lower() else "✅"
 
-    c1, c2, c3, c4 = st.columns(4)
+    c1, c2 = st.columns(2)
     with c1:
-        st.markdown("**Status**");    st.markdown("✅ Complete")
+        st.markdown("**Status**"); st.markdown("✅ Complete")
     with c2:
-        st.markdown("**Risk Score**"); st.markdown(f"{_risk_icon} {_risk_val}/10")
-    with c3:
-        st.markdown("**Assessment**"); st.markdown(f"{_assess_icon} {_assess_val}")
-    with c4:
-        st.markdown("**Expected Cost**"); st.markdown(f"`{_expected_val}`")
+        st.markdown("**Confidence**"); st.markdown(f"📊 {log['confidence_score']}%")
 
-    with st.expander("Reasoning"):
-        st.markdown(_reasoning_val)
+    st.markdown("")
+
+    table_data = {
+        "Item": [
+            "💰 Expected Range",
+            "📊 Risk Score",
+            "🔎 Assessment",
+        ],
+        "Value": [
+            _expected_val,
+            f"{_risk_icon} {_risk_val}/10" if _risk_val != "N/A" else "N/A",
+            f"{_assess_icon} {_assess_val}",
+        ],
+    }
+    st.table(table_data)
+
+    with st.expander("🧠 Detailed AI Reasoning"):
+        st.write(output)
 
     render_rag_evidence(f"{claim['diagnosis']} {claim['procedure']} cost")
     st.caption(f"Confidence Score: {log['confidence_score']}% | {log['timestamp']}")
@@ -86,31 +107,52 @@ def render_cost_agent(output, log, claim):
 
 # ── Fraud Agent ───────────────────────────────────────────────────────────────
 def render_fraud_agent(output, log, claim):
-    _risk      = re.search(r'FRAUD_RISK_SCORE:\s*(\d+)/10', output)
-    _flag      = re.search(r'FRAUD_FLAG:\s*(.+)',            output)
-    _patterns  = re.search(r'PATTERNS_DETECTED:\s*(.+)',     output)
-    _reasoning = re.search(r'REASONING:\s*([\s\S]+)',        output)
+    _indicators = re.search(
+        r'FRAUD_INDICATORS_FOUND:\s*(.+?)(?=\s+RED_FLAGS:|\s+FRAUD_RISK_SCORE:|\s+REASONING:|$)',
+        output, re.DOTALL)
+    _red_flags  = re.search(
+        r'RED_FLAGS:\s*(.+?)(?=\s+FRAUD_RISK_SCORE:|\s+REASONING:|$)',
+        output, re.DOTALL)
+    _risk       = re.search(
+        r'FRAUD_RISK_SCORE:\s*(\d+(?:\.\d+)?)/10',
+        output)
+    _reasoning  = re.search(
+        r'REASONING:\s*(.+)$',
+        output, re.DOTALL)
 
-    _risk_val      = int(_risk.group(1))         if _risk      else 0
-    _flag_val      = _flag.group(1).strip()      if _flag      else "N/A"
-    _patterns_val  = _patterns.group(1).strip()  if _patterns  else "N/A"
-    _reasoning_val = _reasoning.group(1).strip() if _reasoning else output
+    _indicators_val = _indicators.group(1).strip() if _indicators else "N/A"
+    _red_flags_val  = _red_flags.group(1).strip()  if _red_flags  else "None found"
+    _risk_val       = _risk.group(1).strip()       if _risk       else "N/A"
+    _reasoning_val  = _reasoning.group(1).strip()  if _reasoning  else output
 
-    _risk_icon = "🔴" if _risk_val >= 7 else "🟡" if _risk_val >= 4 else "🟢"
-    _flag_icon = "🚨" if "yes" in _flag_val.lower() or "true" in _flag_val.lower() else "✅"
+    _risk_int  = int(float(_risk_val)) if _risk_val != "N/A" else 0
+    _risk_icon = "🔴" if _risk_int >= 7 else "🟡" if _risk_int >= 4 else "🟢"
+    _flag_icon = "🚨" if "yes" in _indicators_val.lower() else "✅"
 
-    c1, c2, c3, c4 = st.columns(4)
+    c1, c2 = st.columns(2)
     with c1:
-        st.markdown("**Status**");    st.markdown("✅ Complete")
+        st.markdown("**Status**"); st.markdown("✅ Complete")
     with c2:
-        st.markdown("**Risk Score**"); st.markdown(f"{_risk_icon} {_risk_val}/10")
-    with c3:
-        st.markdown("**Fraud Flag**"); st.markdown(f"{_flag_icon} {_flag_val}")
-    with c4:
-        st.markdown("**Patterns Detected**"); st.markdown(f"`{_patterns_val}`")
+        st.markdown("**Confidence**"); st.markdown(f"📊 {log['confidence_score']}%")
 
-    with st.expander("Reasoning"):
-        st.markdown(_reasoning_val)
+    st.markdown("")
+
+    table_data = {
+        "Item": [
+            "🚩 Indicators Found",
+            "📊 Risk Score",
+            "🔍 Red Flags",
+        ],
+        "Value": [
+            f"{_flag_icon} {_indicators_val}",
+            f"{_risk_icon} {_risk_val}/10" if _risk_val != "N/A" else "N/A",
+            _red_flags_val,
+        ],
+    }
+    st.table(table_data)
+
+    with st.expander("🧠 Detailed AI Reasoning"):
+        st.write(output)
 
     render_rag_evidence(f"fraud detection {claim['procedure']} {claim['icd_code']}")
     st.caption(f"Confidence Score: {log['confidence_score']}% | {log['timestamp']}")
@@ -118,32 +160,51 @@ def render_fraud_agent(output, log, claim):
 
 # ── Coding Agent ──────────────────────────────────────────────────────────────
 def render_coding_agent(output, log, claim):
-    _validity  = re.search(r'ICD_VALIDITY:\s*(.+)',    output)
-    _match     = re.search(r'PROCEDURE_MATCH:\s*(.+)', output)
-    _issues    = re.search(r'CODING_ISSUES:\s*(.+)',   output)
-    _reasoning = re.search(r'REASONING:\s*([\s\S]+)',  output)
+    _code_match = re.search(
+        r'CODE_MATCH:\s*(.+?)(?=\s+PROCEDURE_MATCH:|\s+CODING_ACCURACY_SCORE:|\s+REASONING:|$)',
+        output, re.DOTALL)
+    _proc_match = re.search(
+        r'PROCEDURE_MATCH:\s*(.+?)(?=\s+CODING_ACCURACY_SCORE:|\s+REASONING:|$)',
+        output, re.DOTALL)
+    _score      = re.search(
+        r'CODING_ACCURACY_SCORE:\s*(\d+(?:\.\d+)?)/10',
+        output)
+    _reasoning  = re.search(
+        r'REASONING:\s*(.+)$',
+        output, re.DOTALL)
 
-    _validity_val  = _validity.group(1).strip()  if _validity  else "N/A"
-    _match_val     = _match.group(1).strip()     if _match     else "N/A"
-    _issues_val    = _issues.group(1).strip()    if _issues    else "None"
-    _reasoning_val = _reasoning.group(1).strip() if _reasoning else output
+    _code_match_val = _code_match.group(1).strip() if _code_match else "N/A"
+    _proc_match_val = _proc_match.group(1).strip() if _proc_match else "N/A"
+    _score_val      = _score.group(1).strip()      if _score      else "N/A"
+    _reasoning_val  = _reasoning.group(1).strip()  if _reasoning  else output
 
-    _valid_icon = "✅" if "valid" in _validity_val.lower() else "❌"
-    _match_icon = "✅" if "yes" in _match_val.lower() or "match" in _match_val.lower() else "⚠️"
-    _issue_icon = "⚠️" if _issues_val.lower() not in ("none", "n/a", "") else "✅"
+    _valid_icon = "✅" if "valid" in _code_match_val.lower() and "invalid" not in _code_match_val.lower() else "❌"
+    _match_icon = "✅" if "appropriate" in _proc_match_val.lower() else "⚠️"
 
-    c1, c2, c3, c4 = st.columns(4)
+    c1, c2 = st.columns(2)
     with c1:
-        st.markdown("**Status**");          st.markdown("✅ Complete")
+        st.markdown("**Status**"); st.markdown("✅ Complete")
     with c2:
-        st.markdown("**ICD Validity**");    st.markdown(f"{_valid_icon} {_validity_val}")
-    with c3:
-        st.markdown("**Procedure Match**"); st.markdown(f"{_match_icon} {_match_val}")
-    with c4:
-        st.markdown("**Coding Issues**");   st.markdown(f"{_issue_icon} {_issues_val}")
+        st.markdown("**Confidence**"); st.markdown(f"📊 {log['confidence_score']}%")
 
-    with st.expander("Reasoning"):
-        st.markdown(_reasoning_val)
+    st.markdown("")
+
+    table_data = {
+        "Item": [
+            "🧾 Code Match",
+            "⚙️ Procedure Match",
+            "📊 Accuracy Score",
+        ],
+        "Value": [
+            f"{_valid_icon} {_code_match_val}",
+            f"{_match_icon} {_proc_match_val}",
+            f"{_score_val}/10" if _score_val != "N/A" else "N/A",
+        ],
+    }
+    st.table(table_data)
+
+    with st.expander("🧠 Detailed AI Reasoning"):
+        st.write(output)
 
     render_rag_evidence(f"ICD-10 {claim['icd_code']} {claim['diagnosis']} coding guidelines")
     st.caption(f"Confidence Score: {log['confidence_score']}% | {log['timestamp']}")
@@ -151,37 +212,65 @@ def render_coding_agent(output, log, claim):
 
 # ── Decision Agent ────────────────────────────────────────────────────────────
 def render_decision_agent(output, log, claim):
-    _decision   = re.search(r'FINAL_DECISION:\s*(.+)',      output)
-    _confidence = re.search(r'DECISION_CONFIDENCE:\s*(.+)', output)
-    _priority   = re.search(r'REVIEW_PRIORITY:\s*(.+)',     output)
-    _reasoning  = re.search(r'REASONING:\s*([\s\S]+)',      output)
+    _decision  = re.search(
+        r'FINAL_DECISION:\s*(.+?)(?=\s+OVERALL_RISK_SCORE:|\s+PRIORITY:|\s+RECOMMENDED_ACTION:|\s+SUMMARY:|$)',
+        output, re.DOTALL)
+    _risk      = re.search(
+        r'OVERALL_RISK_SCORE:\s*(\d+(?:\.\d+)?)/10',
+        output)
+    _priority  = re.search(
+        r'PRIORITY:\s*(.+?)(?=\s+RECOMMENDED_ACTION:|\s+SUMMARY:|$)',
+        output, re.DOTALL)
+    _action    = re.search(
+        r'RECOMMENDED_ACTION:\s*(.+?)(?=\s+SUMMARY:|$)',
+        output, re.DOTALL)
+    _summary   = re.search(
+        r'SUMMARY:\s*(.+)$',
+        output, re.DOTALL)
 
-    _decision_val   = _decision.group(1).strip()   if _decision   else "N/A"
-    _confidence_val = _confidence.group(1).strip() if _confidence else "N/A"
-    _priority_val   = _priority.group(1).strip()   if _priority   else "N/A"
-    _reasoning_val  = _reasoning.group(1).strip()  if _reasoning  else output
+    _decision_val = _decision.group(1).strip() if _decision else "N/A"
+    _risk_val     = _risk.group(1).strip()     if _risk     else "N/A"
+    _priority_val = _priority.group(1).strip() if _priority else "N/A"
+    _action_val   = _action.group(1).strip()   if _action   else "N/A"
+    _summary_val  = _summary.group(1).strip()  if _summary  else "N/A"
 
     _decision_icon = (
         "✅" if "approve" in _decision_val.lower() else
         "❌" if "reject"  in _decision_val.lower() else "⚠️"
     )
     _priority_icon = (
-        "🔴" if "high"   in _priority_val.lower() else
+        "🔴" if "high"   in _priority_val.lower() or "critical" in _priority_val.lower() else
         "🟡" if "medium" in _priority_val.lower() else "🟢"
     )
 
-    c1, c2, c3, c4 = st.columns(4)
+    c1, c2 = st.columns(2)
     with c1:
-        st.markdown("**Status**");          st.markdown("✅ Complete")
+        st.markdown("**Status**"); st.markdown("✅ Complete")
     with c2:
-        st.markdown("**Decision**");        st.markdown(f"{_decision_icon} {_decision_val}")
-    with c3:
-        st.markdown("**Confidence**");      st.markdown(f"📊 {_confidence_val}")
-    with c4:
-        st.markdown("**Review Priority**"); st.markdown(f"{_priority_icon} {_priority_val}")
+        st.markdown("**Confidence**"); st.markdown(f"📊 {log['confidence_score']}%")
 
-    with st.expander("Reasoning"):
-        st.markdown(_reasoning_val)
+    st.markdown("")
+
+    table_data = {
+        "Item": [
+            "✅ Decision",
+            "📊 Overall Risk",
+            "🚦 Priority",
+            "📄 Recommended Action",
+            "📝 Summary",
+        ],
+        "Value": [
+            f"{_decision_icon} {_decision_val}",
+            f"{_risk_val}/10" if _risk_val != "N/A" else "N/A",
+            f"{_priority_icon} {_priority_val}",
+            _action_val,
+            _summary_val,
+        ],
+    }
+    st.table(table_data)
+
+    with st.expander("🧠 Detailed AI Reasoning"):
+        st.write(output)
 
     render_rag_evidence(
         f"{claim['diagnosis']} {claim['procedure']} {claim['icd_code']} claim decision"

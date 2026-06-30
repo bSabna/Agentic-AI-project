@@ -8,19 +8,26 @@ def ensure_log_dir():
     os.makedirs("audit_logs", exist_ok=True)
 
 def extract_confidence(agent_output: str) -> float:
-    """Extract score from agent output and convert to confidence %"""
     import re
-    patterns = [
+
+    # Coding accuracy: higher score = higher confidence
+    coding_match = re.search(r'CODING_ACCURACY_SCORE:\s*(\d+(?:\.\d+)?)/10', agent_output)
+    if coding_match:
+        score = float(coding_match.group(1))
+        return round(score / 10 * 100, 1)
+
+    # Risk scores: lower score = higher confidence
+    risk_patterns = [
         r'COST_RISK_SCORE:\s*(\d+(?:\.\d+)?)/10',
         r'FRAUD_RISK_SCORE:\s*(\d+(?:\.\d+)?)/10',
-        r'CODING_ACCURACY_SCORE:\s*(\d+(?:\.\d+)?)/10',
-        r'OVERALL_RISK_SCORE:\s*(\d+(?:\.\d+)?)/10'
+        r'OVERALL_RISK_SCORE:\s*(\d+(?:\.\d+)?)/10',
     ]
-    for pattern in patterns:
+    for pattern in risk_patterns:
         match = re.search(pattern, agent_output)
         if match:
             score = float(match.group(1))
             return round((10 - score) / 10 * 100, 1)
+
     return 75.0
 
 def log_agent_decision(claim_id: str, agent_name: str, 

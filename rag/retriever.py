@@ -63,24 +63,27 @@ def retrieve_context(query: str) -> str:
 
 def retrieve_with_scores(query: str, k: int = 3) -> list[dict]:
     vectorstore = _get_vectorstore()
-    results = vectorstore.similarity_search_with_relevance_scores(query, k=k)
+    # Fetch more than needed so dedup still leaves enough unique results
+    results = vectorstore.similarity_search_with_relevance_scores(query, k=k * 2)
 
     evidence = []
-    seen = set()  # track source+section combos already added
+    seen_texts = set()
 
     for doc, score in results:
-        source  = doc.metadata.get("source",  "Unknown")
-        section = doc.metadata.get("section", "—")
-        key = (source, section)
-
-        if key in seen:
-            continue  # skip duplicate
-        seen.add(key)
+        # Deduplicate by actual text content
+        text = doc.page_content.strip()
+        if text in seen_texts:
+            continue
+        seen_texts.add(text)
 
         evidence.append({
-            "source":  source,
-            "section": section,
+            "source":  doc.metadata.get("source",  "Unknown"),
+            "section": doc.metadata.get("section", "—"),
             "score":   round(score, 2),
-            "text":    doc.page_content.strip()
+            "text":    text
         })
+
+        if len(evidence) == k:  # stop once we have k unique results
+            break
+
     return evidence

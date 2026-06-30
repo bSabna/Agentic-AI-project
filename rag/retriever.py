@@ -66,10 +66,20 @@ def retrieve_with_scores(query: str, k: int = 3) -> list[dict]:
     results = vectorstore.similarity_search_with_relevance_scores(query, k=k)
 
     evidence = []
+    seen = set()  # track source+section combos already added
+
     for doc, score in results:
+        source  = doc.metadata.get("source",  "Unknown")
+        section = doc.metadata.get("section", "—")
+        key = (source, section)
+
+        if key in seen:
+            continue  # skip duplicate
+        seen.add(key)
+
         evidence.append({
-            "source":  doc.metadata.get("source",  "Unknown"),
-            "section": doc.metadata.get("section", "—"),
+            "source":  source,
+            "section": section,
             "score":   round(score, 2),
             "text":    doc.page_content.strip()
         })

@@ -3,9 +3,10 @@ from langchain_community.embeddings import SentenceTransformerEmbeddings
 import os
 
 def build_if_needed():
-    if not os.path.exists("rag/chroma_db"):
-        from rag.build_vectorstore import build_vectorstore
-        build_vectorstore()
+    import shutil
+    shutil.rmtree("rag/chroma_db", ignore_errors=True)
+    from rag.build_vectorstore import build_vectorstore
+    build_vectorstore()
 
 def _get_vectorstore():
     build_if_needed()

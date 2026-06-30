@@ -160,7 +160,7 @@ def render_fraud_agent(output, log, claim):
 
 # ── Coding Agent ──────────────────────────────────────────────────────────────
 def render_coding_agent(output, log, claim):
-    st.write("DEBUG RAW OUTPUT:", output)
+    
     _code_match = re.search(
         r'CODE_MATCH:\s*(.+?)(?=\s+PROCEDURE_MATCH:|\s+CODING_ACCURACY_SCORE:|\s+REASONING:|$)',
         output, re.DOTALL)

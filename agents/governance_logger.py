@@ -11,19 +11,21 @@ def extract_confidence(agent_output: str) -> float:
     import re
 
     # Coding accuracy: higher score = higher confidence
-    coding_match = re.search(r'CODING_ACCURACY_SCORE:\s*(\d+(?:\.\d+)?)/10', agent_output)
+    coding_match = re.search(
+        r'CODING_ACCURACY_SCORE:\s*(\d+(?:\.\d+)?)\s*/\s*10',
+        agent_output, re.IGNORECASE)
     if coding_match:
         score = float(coding_match.group(1))
         return round(score / 10 * 100, 1)
 
     # Risk scores: lower score = higher confidence
     risk_patterns = [
-        r'COST_RISK_SCORE:\s*(\d+(?:\.\d+)?)/10',
-        r'FRAUD_RISK_SCORE:\s*(\d+(?:\.\d+)?)/10',
-        r'OVERALL_RISK_SCORE:\s*(\d+(?:\.\d+)?)/10',
+        r'COST_RISK_SCORE:\s*(\d+(?:\.\d+)?)\s*/\s*10',
+        r'FRAUD_RISK_SCORE:\s*(\d+(?:\.\d+)?)\s*/\s*10',
+        r'OVERALL_RISK_SCORE:\s*(\d+(?:\.\d+)?)\s*/\s*10',
     ]
     for pattern in risk_patterns:
-        match = re.search(pattern, agent_output)
+        match = re.search(pattern, agent_output, re.IGNORECASE)
         if match:
             score = float(match.group(1))
             return round((10 - score) / 10 * 100, 1)

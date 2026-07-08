@@ -4,5 +4,5 @@ __pycache__/
 *.pyc
 *.pyd
 *.dll
-rag/chroma_db/
+poc/rag/chroma_db/
 .streamlit/

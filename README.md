@@ -2,28 +2,6 @@
 
 This repository contains the complete submission for the Cotiviti Intern Assessment, including the written report, presentation slides, demo video, and a working proof-of-concept (POC) application.
 
-## 📁 Repository Structure
-
-cotiviti-agentic-ai/
-│
-├── report/
-│   └── Sabna_Cotiviti_AI_Report.docx      # Written report
-│
-├── ppt/
-│   └── Sabna - AI_TPO.pptx                # Presentation slides
-│
-├── video/
-│   └── README.md                          # Link to demo video (hosted on Google Drive)
-│
-├── poc/
-│   ├── app.py                             # Main application
-│   ├── requirements.txt                   # Python dependencies
-│   ├── README.md                          # POC-specific documentation
-│   ├── agents/                            # Agent modules (fraud, cost, coding, decision, etc.)
-│   ├── data/                              # Sample healthcare knowledge base
-│   └── rag/                               # RAG pipeline (retriever, vectorstore builder)
-│
-└── .gitignore
 
 ## 📄 Contents
 
